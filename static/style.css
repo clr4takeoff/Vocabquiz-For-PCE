@@ -3,12 +3,15 @@
 body {
     font-family: 'Noto Sans KR', sans-serif;
     background-color: #f4f4f9;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 50px;
     margin: 0;
     color: #333;
+    padding-top: 50px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .card {
@@ -17,13 +20,52 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 90%;
-    max-width: 500px;
+    max-width: 700px;
     box-sizing: border-box;
+}
+
+.chapter-section {
+    display: flex;
+    flex-wrap: wrap;       
+    justify-content: space-between;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 50px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.chapter-btn {
+    width: 23%;   
+    margin-bottom: 10px;
+    padding: 10px 0;
+    text-align: center;
+    background-color: #ddd;
+    color: #333;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+}
+
+
+.chapter-btn:hover {
+    background-color: #bbb;
+}
+
+.chapter-btn.active {
+    background-color: #789cde;
+    color: white;
 }
 
 h2 {
     text-align: center;
     color: #2c3e50;
+    font-family: 'Arial', sans-serif;
+    font-weight: 800;
 }
 
 p {
@@ -60,24 +102,26 @@ button:hover {
     background-color: #1b4490;
 }
 
-.result {
+.answer-box {
+    background-color: #fef6e4;
+    border-left: 6px solid #f4c430;
+    padding: 15px 20px;
     margin-top: 20px;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
-    padding: 12px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-size: 17px;
+    line-height: 1.6;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .example-box {
-    margin-top: 15px;
+    background-color: #f0f4f8;
+    border-left: 6px solid #5dade2;
+    padding: 15px 20px;
     margin-bottom: 20px;
-    padding: 12px;
-    background-color: #eef4ff;
-    border-left: 4px solid #3f51b5;
-    color: #2c3e50;
+    margin-top: 15px;
+    border-radius: 8px;
+    font-size: 16px;
     font-style: italic;
-    font-size: 15px;
+    color: #555;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }

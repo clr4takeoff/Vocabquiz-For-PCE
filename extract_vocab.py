@@ -1,10 +1,10 @@
 import fitz
 import re
 
-def extract_vocab_from_pdf(file_path):
+def extract_vocab_from_pdf(file_path, chapter):
     doc = fitz.open(file_path)
-    vocab_triples = []
-    
+    vocab_quads = []
+
     current_word = None
     collecting_meaning = False
     meaning_lines = []
@@ -12,18 +12,18 @@ def extract_vocab_from_pdf(file_path):
 
     for page in doc:
         lines = page.get_text().splitlines()
-        
+
         for line in lines:
             line = line.strip()
 
             if collecting_meaning:
-                if line.lower().startswith("example:"):
-                    example = line.split("Example:")[-1].strip()
+                if line.lower().startswith("example sentence:") or line.lower().startswith("example:"):
+                    example = line.split(":", 1)[-1].strip()
                     collecting_meaning = False
                     if current_word and meaning_lines:
                         meaning = " ".join(meaning_lines).strip()
                         if not re.search(r'[ㄱ-ㅎ가-힣]', meaning):
-                            vocab_triples.append((current_word, meaning, example))
+                            vocab_quads.append((current_word, meaning, example, chapter))
                     current_word = None
                     meaning_lines = []
                     example = ""
@@ -31,18 +31,27 @@ def extract_vocab_from_pdf(file_path):
                     collecting_meaning = False
                     meaning = " ".join(meaning_lines).strip()
                     if current_word and meaning:
-                        vocab_triples.append((current_word, meaning, ""))
+                        vocab_quads.append((current_word, meaning, "", chapter))
                     current_word = None
                     meaning_lines = []
                 else:
                     meaning_lines.append(line)
                 continue
 
-            if re.match(r'^\d+[.)]?\s+[A-Za-z][A-Za-z\s\-]+$', line):
+            if re.match(r'^\d+[.)]?\s+.+$', line):
                 parts = line.split(maxsplit=1)
                 current_word = parts[1].strip() if len(parts) > 1 else parts[0].strip()
+            elif (
+                line
+                and not line.startswith("•")
+                and line[0].isupper()
+                and len(line.split()) <= 3
+                and not line.lower().startswith("lesson")
+                and not line.lower().startswith("here's")
+            ):
+                current_word = line.strip()
             elif line.lower().startswith("meaning:"):
-                meaning_lines = [line.split("Meaning:")[-1].strip()]
+                meaning_lines = [line.split(":", 1)[-1].strip()]
                 collecting_meaning = True
 
-    return vocab_triples
+    return vocab_quads
