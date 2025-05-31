@@ -32,11 +32,12 @@ def register_routes(app):
             chapter = ''
         key = chapter or 'all'
 
-        if action != 'next':
-            shown_history[key]  = []
-            score_tracker[key] = {"correct": 0, "wrong": 0}
+        if action == 'next':
+            shown_history[key].append(index)
         else:
-            ensure_tracking_initialized(key)
+            # 새로고침이나 첫 접속일 경우 진행 기록 초기화
+            shown_history[key] = []
+            score_tracker[key] = {"correct": 0, "wrong": 0}
 
         filtered = [v for v in vocab_list if not chapter or str(v[3]) == chapter]
         total    = len(filtered)

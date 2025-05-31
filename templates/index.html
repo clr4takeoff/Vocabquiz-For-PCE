@@ -17,7 +17,6 @@
       </div>
 
       <h2>📘 영어 단어 퀴즈</h2>
-
       <div class="progress-container">
         <div class="progress-info">
           진행률: {{ progress_current }} / {{ progress_total }} ({{ progress_percent }}%)
@@ -25,6 +24,10 @@
         <div class="progress-bar">
           <div class="progress-fill" style="width: {{ progress_percent }}%;"></div>
         </div>
+
+          <div class="score-summary">
+          정답: {{ correct_count }}개 | 오답: {{ wrong_count }}개
+          </div>
       </div>
 
       <p><strong>뜻:</strong> {{ definition }}</p>
@@ -56,7 +59,7 @@
               {% endif %}
               <form action="/" method="get">
                 <input type="hidden" name="chapter" value="{{ selected_chapter or '' }}">
-                <input type="hidden" name="action"  value="next">   {# ← 추가! #}
+                <input type="hidden" name="action"  value="next">
                 <button type="submit">다음 문제</button>
               </form>
             {% endif %}
