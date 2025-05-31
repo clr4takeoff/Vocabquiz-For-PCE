@@ -24,7 +24,6 @@ def register_routes(app):
         chapter = request.args.get('chapter')
         key = chapter or 'all'
 
-        # 필터링
         filtered = [v for v in vocab_list if not chapter or str(v[3]) == chapter]
 
         total = len(filtered)
@@ -33,27 +32,28 @@ def register_routes(app):
         if total == 0:
             return "⚠️ 해당 챕터에 단어가 없습니다."
 
-        # 리셋 조건
         if len(used) >= total:
             shown_history[key] = []
             used = []
 
-        # 랜덤 선택 (기록은 안 함)
         available = list(set(range(total)) - set(used))
         index = random.choice(available)
         word = filtered[index]
 
+        progress_current = len(used)
+
         return render_template('index.html',
-                               definition=word[1],
-                               answer=word[0],
-                               example=word[2],
-                               selected_chapter=chapter,
-                               user_input=None,
-                               progress_total=total,
-                               progress_current=len(used),
-                               progress_percent=int(len(used)/total*100),
-                               correct_count=score_tracker[key]["correct"],
-                               wrong_count=score_tracker[key]["wrong"])
+                            definition=word[1],
+                            answer=word[0],
+                            example=word[2],
+                            selected_chapter=chapter,
+                            user_input=None,
+                            progress_total=total,
+                            progress_current=progress_current,
+                            progress_percent=int(progress_current / total * 100),
+                            correct_count=score_tracker[key]["correct"],
+                            wrong_count=score_tracker[key]["wrong"])
+
 
     @app.route('/check', methods=['POST'])
     def check():

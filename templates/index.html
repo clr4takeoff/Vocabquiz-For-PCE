@@ -17,17 +17,6 @@
       </div>
 
       <h2>📘 영어 단어 퀴즈</h2>
-
-      <!-- ✅ 진행률 표시 -->
-      <div class="progress-container">
-        <div class="progress-info">
-          진행률: {{ progress_current }} / {{ progress_total }} ({{ progress_percent }}%)
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: {{ progress_percent }}%;"></div>
-        </div>
-      </div>
-
       <p><strong>뜻:</strong> {{ definition }}</p>
 
       {% if not user_input %}
@@ -40,6 +29,7 @@
         <button type="submit">제출</button>
       </form>
       {% else %}
+
       <div class="result">
         {% if is_correct %}
         ✅ 정답입니다!
@@ -64,6 +54,7 @@
         {% endif %}
         <button type="submit">다음 문제</button>
       </form>
+
       {% endif %}
     </div>
   </div>

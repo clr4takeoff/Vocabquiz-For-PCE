@@ -10,6 +10,9 @@ def extract_vocab_from_pdf(file_path, chapter):
     meaning_lines = []
     example = ""
 
+    def contains_korean(text):
+        return bool(re.search(r'[ㄱ-ㅎ가-힣]', text))
+
     for page in doc:
         lines = page.get_text().splitlines()
 
@@ -22,7 +25,7 @@ def extract_vocab_from_pdf(file_path, chapter):
                     collecting_meaning = False
                     if current_word and meaning_lines:
                         meaning = " ".join(meaning_lines).strip()
-                        if not re.search(r'[ㄱ-ㅎ가-힣]', meaning):
+                        if not contains_korean(meaning) and not contains_korean(example):
                             vocab_quads.append((current_word, meaning, example, chapter))
                     current_word = None
                     meaning_lines = []
@@ -30,7 +33,7 @@ def extract_vocab_from_pdf(file_path, chapter):
                 elif re.match(r'^[0-9]+[.)]', line):
                     collecting_meaning = False
                     meaning = " ".join(meaning_lines).strip()
-                    if current_word and meaning:
+                    if current_word and meaning and not contains_korean(meaning):
                         vocab_quads.append((current_word, meaning, "", chapter))
                     current_word = None
                     meaning_lines = []
