@@ -17,45 +17,49 @@
       </div>
 
       <h2>📘 영어 단어 퀴즈</h2>
+
+      <div class="progress-container">
+        <div class="progress-info">
+          진행률: {{ progress_current }} / {{ progress_total }} ({{ progress_percent }}%)
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ progress_percent }}%;"></div>
+        </div>
+      </div>
+
       <p><strong>뜻:</strong> {{ definition }}</p>
-
       {% if not user_input %}
-      <form action="/check" method="post">
-        <input type="hidden" name="correct_answer" value="{{ answer }}">
-        <input type="hidden" name="definition" value="{{ definition }}">
-        <input type="hidden" name="example" value="{{ example }}">
-        <input type="hidden" name="chapter" value="{{ selected_chapter }}">
-        <input type="text" name="user_input" placeholder="정답 입력" required>
-        <button type="submit">제출</button>
-      </form>
-      {% else %}
+          <form action="/check" method="post">
+            <input type="text"   name="user_input">
+            <input type="hidden" name="correct_answer" value="{{ answer }}">
+            <input type="hidden" name="definition"     value="{{ definition }}">
+            <input type="hidden" name="example"        value="{{ example }}">
+            <input type="hidden" name="chapter"        value="{{ selected_chapter or '' }}">
+            <button type="submit">제출</button>
+          </form>
 
-      <div class="result">
-        {% if is_correct %}
-        ✅ 정답입니다!
-        {% else %}
-        ❌ 오답입니다.
-        {% endif %}
-      </div>
-
-      <div class="answer-box">
-        <strong>정답:</strong> {{ answer }}
-      </div>
-
-      {% if example %}
-      <div class="example-box">
-        <strong>예문:</strong> {{ example }}
-      </div>
-      {% endif %}
-
-      <form method="get" action="/">
-        {% if selected_chapter %}
-        <input type="hidden" name="chapter" value="{{ selected_chapter }}">
-        {% endif %}
-        <button type="submit">다음 문제</button>
-      </form>
-
-      {% endif %}
+            {% else %}
+              <div class="result">
+                {% if is_correct %}
+                  ✅ 정답입니다!
+                {% else %}
+                  ❌ 오답입니다.
+                {% endif %}
+              </div>
+              <div class="answer-box">
+                <strong>정답:</strong> {{ answer }}
+              </div>
+              {% if example %}
+                <div class="example-box">
+                  <strong>예문:</strong> {{ example }}
+                </div>
+              {% endif %}
+              <form action="/" method="get">
+                <input type="hidden" name="chapter" value="{{ selected_chapter or '' }}">
+                <input type="hidden" name="action"  value="next">   {# ← 추가! #}
+                <button type="submit">다음 문제</button>
+              </form>
+            {% endif %}
     </div>
   </div>
 </body>
