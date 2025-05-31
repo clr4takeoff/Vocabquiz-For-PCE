@@ -8,23 +8,34 @@
     <div class="card">
         <h2>📘 영어 단어 퀴즈</h2>
         <p><strong>뜻:</strong> {{ definition }}</p>
-        
-        <form action="/check" method="post">
-            <input type="hidden" name="correct_answer" value="{{ answer }}">
-            <input type="hidden" name="definition" value="{{ definition }}">
-            <input type="text" name="user_input" placeholder="정답 입력" required>
-            <button type="submit">제출</button>
-        </form>
 
-        {% if user_input is defined %}
-            <div class="result">
-                {% if is_correct %}
-                    정답입니다!
-                {% else %}
-                    오답입니다. 정답은 <strong>{{ answer }}</strong>입니다.
-                {% endif %}
-            </div>
-        {% endif %}
+        {% if not user_input %}
+            <form action="/check" method="post">
+                <input type="hidden" name="correct_answer" value="{{ answer }}">
+                <input type="hidden" name="definition" value="{{ definition }}">
+                <input type="hidden" name="example" value="{{ example }}">
+                <input type="text" name="user_input" placeholder="정답 입력" required>
+                <button type="submit">제출</button>
+            </form>
+            {% else %}
+                <div class="result" data-example="{{ example }}">
+                    {% if is_correct %}
+                        정답입니다!
+                    {% else %}
+                        오답입니다. 정답은 <strong>{{ answer }}</strong>입니다.
+                    {% endif %}
+                </div>
+
+                <!-- 예문 표시 영역 -->
+                <div id="example-box" class="example-box"></div>
+
+                <form method="get" action="{{ url_for('index') }}">
+                    <button type="submit">➡️ 다음 문제</button>
+                </form>
+
+                <script src="/static/script.js"></script>
+            {% endif %}
+
     </div>
 </body>
 </html>
