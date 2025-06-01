@@ -32,10 +32,12 @@ def register_routes(app):
         chapter = request.args.get("chapter", "") or ""
         key = chapter or "all"
         from_next = session.pop("from_next", False)
+
         if not from_next:
             shown_history[key] = []
             score_tracker[key] = {"correct": 0, "wrong": 0}
             session.pop("current_word", None)
+
         ensure_tracking_initialized(key)
         saved = session.get("current_word")
         if saved and saved.get("chapter") == chapter:
@@ -48,16 +50,22 @@ def register_routes(app):
                 return "해당 챕터에 단어가 없습니다."
             idx = random.randrange(len(filtered_all))
             session["current_word"] = {"idx": idx, "chapter": chapter}
+
         filtered = [v for v in vocab_list if not chapter or str(v[3]) == chapter]
         word = filtered[idx]
         total = len(filtered)
         progress_current = len(shown_history[key])
         progress_percent = int(progress_current / total * 100) if total else 0
+
+        # 🔑 힌트 꺼내서 한 번만 쓰고 제거
+        hint = session.pop("hint", None)
+        hint_meta = session.pop("hint_meta", {})
+
         return render_template(
             "index.html",
-            definition=word[1],
-            answer=word[0],
-            example=word[2],
+            definition=hint_meta.get("definition", word[1]),
+            answer=hint_meta.get("answer", word[0]),
+            example=hint_meta.get("example", word[2]),
             selected_chapter=chapter,
             user_input=None,
             progress_total=total,
@@ -65,7 +73,9 @@ def register_routes(app):
             progress_percent=progress_percent,
             correct_count=score_tracker[key]["correct"],
             wrong_count=score_tracker[key]["wrong"],
+            hint=hint
         )
+
 
     @app.route("/next", methods=["POST"])
     def next_word():
@@ -113,6 +123,38 @@ def register_routes(app):
             answer=correct_answer,
             user_input=user_input,
             is_correct=is_correct,
+            example=example,
+            selected_chapter=chapter,
+            progress_total=total,
+            progress_current=current,
+            progress_percent=progress_percent,
+            correct_count=score_tracker[key]["correct"],
+            wrong_count=score_tracker[key]["wrong"],
+        )
+    
+    @app.route("/hint", methods=["POST"])
+    def hint():
+        correct_answer = request.form["correct_answer"]
+        definition = request.form["definition"]
+        example = request.form.get("example", "")
+        chapter = request.form.get("chapter", "") or ""
+        key = chapter or "all"
+        ensure_tracking_initialized(key)
+        
+        first_letter = correct_answer.strip()[0] if correct_answer else ""
+        hint_message = f"힌트: 정답은 '{first_letter}'로 시작합니다."
+
+        filtered = [v for v in vocab_list if not chapter or str(v[3]) == chapter]
+        total = len(filtered)
+        current = len(shown_history[key])
+        progress_percent = int(current / total * 100) if total else 0
+
+        return render_template(
+            "index.html",
+            definition=definition,
+            answer=correct_answer,
+            user_input=None,
+            hint=hint_message,
             example=example,
             selected_chapter=chapter,
             progress_total=total,

@@ -162,3 +162,20 @@ button:hover {
   font-size: 14px;
   color: #b5b5b5;
 }
+
+.hint-btn {
+    padding: 10px 20px;
+    background-color: #aeaeae;
+    color: #f5f5f5;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.hint-btn:hover {
+    background-color: #515151;
+}

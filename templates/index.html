@@ -32,6 +32,12 @@
 
       <p><strong>뜻:</strong> {{ definition }}</p>
 
+      {% if hint is defined and hint %}
+        <div class="hint-box">
+          {{ hint }}
+        </div>
+      {% endif %}
+
       {% if not user_input %}
         <form action="/check" method="post">
           <input type="text" name="user_input" autocomplete="off" autofocus>
@@ -40,6 +46,14 @@
           <input type="hidden" name="example"        value="{{ example }}">
           <input type="hidden" name="chapter"        value="{{ selected_chapter or '' }}">
           <button type="submit">제출</button>
+        </form>
+
+        <form action="/hint" method="post">
+          <input type="hidden" name="correct_answer" value="{{ answer }}">
+          <input type="hidden" name="definition"     value="{{ definition }}">
+          <input type="hidden" name="example"        value="{{ example }}">
+          <input type="hidden" name="chapter"        value="{{ selected_chapter or '' }}">
+          <button type="submit" class="hint-btn">힌트 보기</button>
         </form>
       {% else %}
         <div class="result">
@@ -62,6 +76,7 @@
           <button type="submit">다음 문제</button>
         </form>
       {% endif %}
+
     </div>
   </div>
 </body>
