@@ -77,7 +77,7 @@ def register_routes(app):
         )
 
 
-    @app.route("/next", methods=["POST"])
+    @app.route("/next", methods=["GET", "POST"])
     def next_word():
         chapter = request.form.get("chapter", "") or ""
         key = chapter or "all"
@@ -115,8 +115,10 @@ def register_routes(app):
             score_tracker[key]["correct"] += 1
         else:
             score_tracker[key]["wrong"] += 1
+
         current = len(shown_history[key])
         progress_percent = int(current / total * 100) if total else 0
+
         return render_template(
             "index.html",
             definition=definition,
@@ -131,6 +133,7 @@ def register_routes(app):
             correct_count=score_tracker[key]["correct"],
             wrong_count=score_tracker[key]["wrong"],
         )
+
     
     @app.route("/hint", methods=["POST"])
     def hint():

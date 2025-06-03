@@ -10,7 +10,7 @@
   <div class="container">
     <div class="card">
       <div class="chapter-section">
-        <a href="/"          class="chapter-btn {% if not selected_chapter %}active{% endif %}">All</a>
+        <a href="/" class="chapter-btn {% if not selected_chapter %}active{% endif %}">All</a>
         <a href="/?chapter=1" class="chapter-btn {% if selected_chapter == '1' %}active{% endif %}">Chapter 1</a>
         <a href="/?chapter=2" class="chapter-btn {% if selected_chapter == '2' %}active{% endif %}">Chapter 2</a>
         <a href="/?chapter=3" class="chapter-btn {% if selected_chapter == '3' %}active{% endif %}">Chapter 3</a>
@@ -71,13 +71,19 @@
             <strong>예문:</strong> {{ example }}
           </div>
         {% endif %}
-        <form action="/next" method="post">
+        <form id="nextForm" action="/next" method="post">
           <input type="hidden" name="chapter" value="{{ selected_chapter or '' }}">
           <button type="submit">다음 문제</button>
         </form>
       {% endif %}
-
     </div>
   </div>
+
+  {% if user_input %}
+  <script>
+    window.fromCheckPage = true;
+  </script>
+  {% endif %}
+  <script src="/static/script.js"></script>
 </body>
 </html>
