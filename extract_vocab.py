@@ -10,7 +10,14 @@ def extract_vocab_from_pdf(file_path, chapter):
     meaning_lines = []
     example = ""
 
+    # 한글 포함 여부 판단
     has_kor = lambda s: re.search(r'[ㄱ-ㅎ가-힣]', s)
+
+    # 단어 정제 함수: 괄호 안 한글 제거 및 불필요한 공백 제거
+    def clean_word(word):
+        word = re.sub(r'\(.*?[ㄱ-ㅎ가-힣]+.*?\)', '', word)  # 괄호 내 한글 제거
+        word = re.sub(r'[ㄱ-ㅎ가-힣]+', '', word)              # 남아있는 한글 제거
+        return word.strip()
 
     for page in doc:
         lines = page.get_text().splitlines()
@@ -21,12 +28,12 @@ def extract_vocab_from_pdf(file_path, chapter):
             # 단어 시작 조건
             if re.match(r'^\d+[.)]?\s+.+$', line):
                 if current_word and meaning_lines:
-                    # 의미 저장 (예문이 없는 경우 포함)
                     meaning = re.sub(r'[•\.\-\s]+$', '', " ".join(meaning_lines).strip())
                     if not has_kor(meaning):
                         vocab_quads.append((current_word, meaning, example, chapter))
-                # 새 단어로 초기화
-                current_word = line.split(maxsplit=1)[1].strip()
+
+                raw_word = line.split(maxsplit=1)[1].strip()
+                current_word = clean_word(raw_word)  # 단어 정제 적용
                 meaning_lines, example = [], ""
                 collecting_meaning = False
                 continue
