@@ -15,52 +15,46 @@ def extract_vocab_from_pdf(file_path, chapter):
     for page in doc:
         lines = page.get_text().splitlines()
 
-        for line in lines:
+        for i, line in enumerate(lines):
             line = line.strip()
 
-            if line.startswith("뜻:") or line.count("• Meaning:") > 1:
-                continue
-
-            if collecting_meaning:
-                if line.lower().startswith(("example sentence:", "example:")):
-                    example = line.split(":", 1)[-1].strip()
-                    collecting_meaning = False
-
-                    if current_word and meaning_lines:
-                        meaning = re.sub(r'[•\.\-\s]+$', '', " ".join(meaning_lines).strip())
-                        if not (has_kor(meaning) or has_kor(example)):
-                            vocab_quads.append((current_word, meaning, example, chapter))
-
-                    current_word = None
-                    meaning_lines, example = [], ""
-                    continue
-
-                if re.match(r'^[0-9]+[.)]', line):
-                    collecting_meaning = False
-                    meaning = " ".join(meaning_lines).strip()
-                    if current_word and meaning and not has_kor(meaning):
-                        vocab_quads.append((current_word, meaning, "", chapter))
-
-                    current_word = None
-                    meaning_lines = []
-                    continue
-
-                meaning_lines.append(line)
-                continue
-
+            # 단어 시작 조건
             if re.match(r'^\d+[.)]?\s+.+$', line):
+                if current_word and meaning_lines:
+                    # 의미 저장 (예문이 없는 경우 포함)
+                    meaning = re.sub(r'[•\.\-\s]+$', '', " ".join(meaning_lines).strip())
+                    if not has_kor(meaning):
+                        vocab_quads.append((current_word, meaning, example, chapter))
+                # 새 단어로 초기화
                 current_word = line.split(maxsplit=1)[1].strip()
-            elif (
-                line
-                and not line.startswith("•")
-                and line[0].isupper()
-                and len(line.split()) <= 3
-                and not line.lower().startswith(("lesson", "here's"))
-            ):
-                current_word = line.strip()
-            elif re.match(r'^[•\s]*meaning:', line, re.I):
-                first = re.sub(r'^[•\s]*meaning:\s*', '', line, flags=re.I).strip()
-                meaning_lines = [first] if first else []
+                meaning_lines, example = [], ""
+                collecting_meaning = False
+                continue
+
+            # Meaning 줄 인식
+            if re.match(r'^[•\s]*meaning:', line, re.I):
+                first_meaning = re.sub(r'^[•\s]*meaning:\s*', '', line, flags=re.I).strip()
+                meaning_lines = [first_meaning] if first_meaning else []
                 collecting_meaning = True
+                continue
+
+            # 예문 줄 인식
+            if collecting_meaning and re.match(r'^(example|example sentence):', line, re.I):
+                example = re.sub(r'^(example|example sentence):', '', line, flags=re.I).strip()
+                collecting_meaning = False
+                continue
+
+            # 의미 줄 계속 수집
+            if collecting_meaning:
+                if line == "" or line.lower().startswith("chapter"):
+                    collecting_meaning = False
+                    continue
+                meaning_lines.append(line)
+
+    # 마지막 단어 처리
+    if current_word and meaning_lines:
+        meaning = re.sub(r'[•\.\-\s]+$', '', " ".join(meaning_lines).strip())
+        if not has_kor(meaning):
+            vocab_quads.append((current_word, meaning, example, chapter))
 
     return vocab_quads
