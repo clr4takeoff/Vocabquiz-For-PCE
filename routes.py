@@ -1,5 +1,5 @@
 import os, re, random
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, jsonify
 from extract_vocab import extract_vocab_from_pdf
 from tracker import vocab_list, shown_history, score_tracker
 
@@ -43,9 +43,7 @@ def register_routes(app):
         if saved and saved.get("chapter") == chapter:
             idx = saved["idx"]
         else:
-            filtered_all = [
-                v for v in vocab_list if not chapter or str(v[3]) == chapter
-            ]
+            filtered_all = [v for v in vocab_list if not chapter or str(v[3]) == chapter]
             if not filtered_all:
                 return "해당 챕터에 단어가 없습니다."
             idx = random.randrange(len(filtered_all))
@@ -57,7 +55,6 @@ def register_routes(app):
         progress_current = len(shown_history[key])
         progress_percent = int(progress_current / total * 100) if total else 0
 
-        # 🔑 힌트 꺼내서 한 번만 쓰고 제거
         hint = session.pop("hint", None)
         hint_meta = session.pop("hint_meta", {})
 
@@ -75,7 +72,6 @@ def register_routes(app):
             wrong_count=score_tracker[key]["wrong"],
             hint=hint
         )
-
 
     @app.route("/next", methods=["GET", "POST"])
     def next_word():
@@ -134,7 +130,6 @@ def register_routes(app):
             wrong_count=score_tracker[key]["wrong"],
         )
 
-    
     @app.route("/hint", methods=["POST"])
     def hint():
         correct_answer = request.form["correct_answer"]
@@ -143,7 +138,7 @@ def register_routes(app):
         chapter = request.form.get("chapter", "") or ""
         key = chapter or "all"
         ensure_tracking_initialized(key)
-        
+
         first_letter = correct_answer.strip()[0] if correct_answer else ""
         hint_message = f"힌트: 정답은 '{first_letter}'로 시작합니다."
 
@@ -166,3 +161,17 @@ def register_routes(app):
             correct_count=score_tracker[key]["correct"],
             wrong_count=score_tracker[key]["wrong"],
         )
+
+    @app.route("/search_word", methods=["POST"])
+    def search_word():
+        keyword = request.json.get("keyword", "").strip().lower()
+        if not keyword:
+            return jsonify({"error": "검색어가 비어있습니다."}), 400
+
+        matches = [
+            {"word": v[0], "definition": v[1], "example": v[2]}
+            for v in vocab_list
+            if keyword in v[0].lower()
+        ]
+
+        return jsonify({"results": matches})

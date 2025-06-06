@@ -78,6 +78,18 @@
       {% endif %}
     </div>
   </div>
+    <div class="search-container">
+      <div class="card">
+        <h3>📚 단어 검색</h3>
+        <input id="searchInput" type="text" placeholder="Enter a word..." style="padding: 8px; width: 200px;" />
+        <button class="search-btn" onclick="searchWord()">검색</button>
+
+        <div id="searchResult" style="margin-top: 15px;">
+          <!-- 결과가 여기에 표시됨 -->
+        </div>
+      </div>
+    </div>
+
 
   {% if user_input %}
   <script>
