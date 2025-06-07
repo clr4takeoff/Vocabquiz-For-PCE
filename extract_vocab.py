@@ -28,6 +28,9 @@ def extract_vocab_from_pdf(file_path, chapter):
             return meaning.split('.')[0].strip()
         return meaning.strip()
 
+    def clean_example(ex):
+        return re.sub(r'^(sentence|example sentence|example)[:\-]?\s*', '', ex.strip(), flags=re.I)
+
     for page in doc:
         lines = page.get_text().splitlines()
 
@@ -52,8 +55,9 @@ def extract_vocab_from_pdf(file_path, chapter):
                 collecting_meaning = True
                 continue
 
-            if re.match(r'^[•\s]*(example|example sentence)[:\-]?', line, re.I):
-                example = re.sub(r'^[•\s]*(example|example sentence)[:\-]?\s*', '', line, flags=re.I).strip()
+            if re.match(r'^[•\s]*(example|example sentence|sentence)[:\-]?', line, re.I):
+                example_text = re.sub(r'^[•\s]*(example|example sentence|sentence)[:\-]?\s*', '', line, flags=re.I).strip()
+                example = clean_example(example_text)
                 continue
 
             if collecting_meaning:
