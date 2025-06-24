@@ -1,7 +1,7 @@
 # 📘 VocabQuiz for PCE
 
 A simple tool to extract and study vocabulary from PDF files.  
-Originally built to prepare for my **PCE (Professional Communication in English)** final exam, but easily reusable for any English learning purpose.
+Originally built to prepare for my **PCE (Presenting and Communicating in English)** final exam, but easily reusable for any English learning purpose.
 
 <br>
 
